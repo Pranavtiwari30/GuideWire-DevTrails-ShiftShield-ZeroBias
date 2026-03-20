@@ -10,7 +10,7 @@
 
 Millions of gig delivery riders across India lose income every time heavy rain, flooding, bandh, or curfew disrupts their shifts. There is no insurance product from any startup, government scheme, or insurtech company that covers this. Existing solutions are either too slow (traditional claim-based insurance), too broad (city-level weather triggers), or completely absent (social disruption events).
 
-The real pain is not just lost hourly wages. A rider who misses 3 deliveries during dinner rush loses their daily platform bonus which accounts for 30–40% of their daily income. No product today accounts for this.
+The real pain is not just lost hourly wages. A rider who misses 3 deliveries during dinner rush loses their daily platform bonus which accounts for 30-40% of their daily income. No product today accounts for this.
 
 ## What We Are Building
 
@@ -54,7 +54,7 @@ ShiftShield validates that the rider was **actually logged in and accepting orde
 
 Traditional insurance requires riders to manually prove their income loss. Forms, screenshots, back-and-forth with adjusters. It does not work for a ₹5 premium product.
 
-ShiftShield uses the **platform's own performance data** as claim evidence. If the delivery platform's system shows that a rider's completion rate, rank, or delivery count dropped during a weather event — that IS the proof. The platform already tracks this. We just read it.
+ShiftShield uses the **platform's own performance data** as claim evidence. If the delivery platform's system shows that a rider's completion rate, rank, or delivery count dropped during a weather event, that IS the proof. The platform already tracks this. We just read it.
 
 **Implementation plan:**
 
