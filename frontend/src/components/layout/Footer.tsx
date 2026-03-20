@@ -18,10 +18,12 @@ export default function Footer() {
 						<div className="flex flex-col gap-4 max-w-xs">
 							<Link
 								href="/"
-								className="text-2xl flex items-center select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
-							>
+								className="text-2xl flex items-center select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg">
 								Shift
-								<IconShieldDollar color="#00aaff" aria-hidden="true" />
+								<IconShieldDollar
+									color="#00aaff"
+									aria-hidden="true"
+								/>
 								<span className="text-accent">hield</span>
 							</Link>
 							<p className="text-background/50 text-sm leading-relaxed">
@@ -43,8 +45,7 @@ export default function Footer() {
 										<li key={label}>
 											<ScrollLink
 												href={href}
-												className="text-sm text-background/55 hover:text-background transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
-											>
+												className="text-sm text-background/55 hover:text-background transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded">
 												{label}
 											</ScrollLink>
 										</li>
@@ -56,12 +57,19 @@ export default function Footer() {
 									Connect
 								</p>
 								<ul className="flex flex-col gap-2.5">
-									{["Team", "GitHub", "Demo"].map((label) => (
+									{[
+										{
+											label: "GitHub",
+											href: "https://github.com/Pranavtiwari30/GuideWire-DevTrails-ShiftShield-ZeroBias",
+										},
+										{ label: "Demo", href: "#" },
+									].map(({ label, href }) => (
 										<li key={label}>
 											<a
-												href="#"
-												className="text-sm text-background/55 hover:text-background transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
-											>
+												href={href}
+												target={href !== "#" ? "_blank" : undefined}
+												rel={href !== "#" ? "noopener noreferrer" : undefined}
+												className="text-sm text-background/55 hover:text-background transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded">
 												{label}
 											</a>
 										</li>

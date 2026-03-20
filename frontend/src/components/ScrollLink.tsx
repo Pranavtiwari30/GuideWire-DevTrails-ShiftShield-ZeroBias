@@ -12,9 +12,10 @@ interface ScrollLinkProps {
 	href: string;
 	className?: string;
 	children: ReactNode;
+	onClick?: () => void;
 }
 
-export default function ScrollLink({ href, className, children }: ScrollLinkProps) {
+export default function ScrollLink({ href, className, children, onClick }: ScrollLinkProps) {
 	const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		const isHash = href.startsWith("#");
 		if (!isHash) return;
@@ -26,6 +27,7 @@ export default function ScrollLink({ href, className, children }: ScrollLinkProp
 			duration: 0.85,
 			ease: "power3.inOut",
 		});
+		onClick?.();
 	};
 
 	return (

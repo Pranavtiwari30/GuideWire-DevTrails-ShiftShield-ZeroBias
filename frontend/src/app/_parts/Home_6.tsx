@@ -15,7 +15,7 @@ const marketStats = [
 	{
 		num: "15M+",
 		label: "Delivery Riders in India",
-		desc: "Across Swiggy, Zomato, Blinkit, Dunzo — the primary user base for ShiftShield's first phase.",
+		desc: "Across India's leading food and grocery delivery platforms — the primary user base for ShiftShield's first phase.",
 	},
 	{
 		num: "₹900Cr",

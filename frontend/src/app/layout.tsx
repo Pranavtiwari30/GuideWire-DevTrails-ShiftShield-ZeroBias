@@ -29,7 +29,7 @@ export default function RootLayout({
 		<html
 			lang="en"
 			className={`${outfit.variable} ${geistMono.variable} font-sans h-full antialiased text-foreground bg-background`}>
-			<body>
+			<body className="overflow-x-hidden">
 				<a href="#main-content" className="skip-link">Skip to main content</a>
 				<Navbar />
 				<main id="main-content">{children}</main>

@@ -54,7 +54,7 @@ ShiftShield validates that the rider was **actually logged in and accepting orde
 
 Traditional insurance requires riders to manually prove their income loss. Forms, screenshots, back-and-forth with adjusters. It does not work for a ₹5 premium product.
 
-ShiftShield uses the **platform's own performance data** as claim evidence. If Swiggy or Zomato's system shows that a rider's completion rate, rank, or delivery count dropped during a weather event that IS the proof. The platform already tracks this. We just read it.
+ShiftShield uses the **platform's own performance data** as claim evidence. If the delivery platform's system shows that a rider's completion rate, rank, or delivery count dropped during a weather event — that IS the proof. The platform already tracks this. We just read it.
 
 **Implementation plan:**
 

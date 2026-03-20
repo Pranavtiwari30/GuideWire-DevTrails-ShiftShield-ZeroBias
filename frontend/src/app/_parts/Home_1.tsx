@@ -3,7 +3,9 @@ import { useGSAP } from "@gsap/react";
 import {
 	IconArrowRight,
 	IconChevronRight,
+	IconCloudRain,
 	IconShieldCheck,
+	IconWallet,
 } from "@tabler/icons-react";
 import ScrollLink from "@/components/ScrollLink";
 import gsap from "gsap";
@@ -22,104 +24,134 @@ export default function Home_1() {
 	useGSAP(
 		() => {
 			const prefersReduced = window.matchMedia(
-				"(prefers-reduced-motion: reduce)"
+				"(prefers-reduced-motion: reduce)",
 			).matches;
 
 			if (prefersReduced) {
 				gsap.set(
-					[".hero-eyebrow", ".hero-line", ".hero-sub", ".hero-cta", ".hero-visual"],
-					{ opacity: 1, y: 0, scale: 1, clipPath: "none" }
+					[
+						".hero-eyebrow",
+						".hero-line",
+						".hero-sub",
+						".hero-cta",
+						".float-card-1",
+						".float-card-2",
+						".float-card-3",
+					],
+					{ opacity: 1, y: 0, rotation: 0, clipPath: "none" },
 				);
 			} else {
-				// ── Initial states ────────────────────────────────────────────
-				gsap.set(".hero-visual", {
-					opacity: 0,
-					x: 50,
-					rotationY: -18,
-					transformPerspective: 900,
-				});
-				gsap.set([".ring-1", ".ring-2", ".ring-3"], { scale: 0, opacity: 0 });
+				// ── Initial states ─────────────────────────────────────
 				gsap.set(".hero-eyebrow", { opacity: 0, y: 14 });
 				gsap.set(".hero-line", { clipPath: "inset(0 100% 0 0 round 4px)" });
 				gsap.set(".hero-sub", { opacity: 0, y: 14 });
 				gsap.set(".hero-cta", { opacity: 0, y: 14 });
+				gsap.set(".float-card-1", { opacity: 0, y: 40, rotation: -6 });
+				gsap.set(".float-card-2", {
+					opacity: 0,
+					y: 60,
+					rotation: 0,
+					scale: 0.95,
+				});
+				gsap.set(".float-card-3", { opacity: 0, y: 40, rotation: 5 });
 
-				// ── Intro timeline (absolute positions for tight overlap) ─────
 				const tl = gsap.timeline();
 
-				// Card swoops in from the right with 3D perspective
-				tl.to(".hero-visual", {
-					opacity: 1,
-					x: 0,
-					rotationY: 0,
-					duration: 1.1,
-					ease: "power3.out",
-				}, 0)
-				// Rings pop in sequentially with bounce
-				.to(".ring-1", { scale: 1, opacity: 1, duration: 0.55, ease: "back.out(2.5)" }, 0.3)
-				.to(".ring-2", { scale: 1, opacity: 1, duration: 0.55, ease: "back.out(2.5)" }, 0.5)
-				.to(".ring-3", { scale: 1, opacity: 1, duration: 0.55, ease: "back.out(2.5)" }, 0.7)
-				// Eyebrow
-				.to(".hero-eyebrow", { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.65)
-				// Headline lines wipe in left→right via clipPath
-				.to(".hero-line", {
-					clipPath: "inset(0 0% 0 0 round 4px)",
-					duration: 0.75,
-					stagger: 0.18,
-					ease: "power3.inOut",
-				}, 0.9)
-				// Sub + CTA
-				.to(".hero-sub", { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 1.85)
-				.to(".hero-cta", { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 2.15);
+				// Left side
+				tl.to(
+					".hero-eyebrow",
+					{ opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+					0.1,
+				)
+					.to(
+						".hero-line",
+						{
+							clipPath: "inset(0 0% 0 0 round 4px)",
+							duration: 0.75,
+							stagger: 0.18,
+							ease: "power3.inOut",
+						},
+						0.4,
+					)
+					.to(
+						".hero-sub",
+						{ opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
+						1.55,
+					)
+					.to(
+						".hero-cta",
+						{ opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+						1.85,
+					);
 
-				// ── Idle loops (start after intro settles ~3s) ────────────────
-				// Radar rings pulse outward
-				gsap.fromTo(
-					".ring-1",
-					{ scale: 1, opacity: 0.65 },
-					{ scale: 1.4, opacity: 0, duration: 2.6, repeat: -1, ease: "expo.out", delay: 3.2 }
-				);
-				gsap.fromTo(
-					".ring-2",
-					{ scale: 1, opacity: 0.5 },
-					{ scale: 1.4, opacity: 0, duration: 2.9, repeat: -1, ease: "expo.out", delay: 4.0 }
-				);
-				gsap.fromTo(
-					".ring-3",
-					{ scale: 1, opacity: 0.35 },
-					{ scale: 1.4, opacity: 0, duration: 3.2, repeat: -1, ease: "expo.out", delay: 4.8 }
-				);
+				// Cards enter staggered
+				tl.to(
+					".float-card-1",
+					{
+						opacity: 1,
+						y: 0,
+						rotation: -5,
+						duration: 0.8,
+						ease: "back.out(1.4)",
+					},
+					0.5,
+				)
+					.to(
+						".float-card-2",
+						{
+							opacity: 1,
+							y: 0,
+							rotation: 0,
+							scale: 1,
+							duration: 0.8,
+							ease: "back.out(1.4)",
+						},
+						0.72,
+					)
+					.to(
+						".float-card-3",
+						{
+							opacity: 1,
+							y: 0,
+							rotation: 4,
+							duration: 0.8,
+							ease: "back.out(1.4)",
+						},
+						0.94,
+					);
 
-				// Card 3D tilt + float
-				gsap.set(".card-inner", { transformPerspective: 600 });
-				gsap.to(".card-inner", {
-					rotationY: 5,
-					rotationX: -4,
-					duration: 4.0,
+				// ── Idle float loops (staggered phase, different durations) ──
+				// Card 1 — slowest, tilts left
+				gsap.to(".float-card-1", {
+					y: -14,
+					rotation: -3,
+					duration: 3.8,
 					repeat: -1,
 					yoyo: true,
 					ease: "sine.inOut",
-					delay: 3.0,
+					delay: 1.8,
 				});
-				gsap.to(".card-inner", {
-					y: -9,
-					duration: 2.8,
+				// Card 2 — medium, stays upright
+				gsap.to(".float-card-2", {
+					y: -20,
+					duration: 3.1,
 					repeat: -1,
 					yoyo: true,
 					ease: "sine.inOut",
-					delay: 3.2,
+					delay: 2.3,
 				});
-
-				// Shield icon breathing pulse
-				gsap.to(".shield-icon", {
-					scale: 1.14,
-					duration: 1.9,
+				// Card 3 — fastest, tilts right
+				gsap.to(".float-card-3", {
+					y: -12,
+					rotation: 6,
+					duration: 2.6,
 					repeat: -1,
 					yoyo: true,
 					ease: "sine.inOut",
+					delay: 1.4,
 				});
 
-				// ── Word cycling ──────────────────────────────────────────────
+				// ── Word cycling ──────────────────────────────────────
 				const span = wordRef.current!;
 				span.style.display = "inline-block";
 				span.textContent = DISRUPTIONS[0];
@@ -167,21 +199,23 @@ export default function Home_1() {
 				gsap.delayedCall(2.8, cycleWord);
 			}
 		},
-		{ scope: containerRef }
+		{ scope: containerRef },
 	);
 
 	return (
 		<section
 			ref={containerRef}
 			aria-label="Hero"
-			className="min-h-screen flex items-center px-4 md:px-10 pt-28 pb-16 overflow-hidden"
-		>
+			className="min-h-screen flex items-center px-4 md:px-10 pt-28 pb-16 overflow-hidden">
 			<div className="container mx-auto max-w-6xl">
 				<div className="flex items-center gap-8 justify-between">
 					{/* Left */}
 					<div className="flex-1 flex flex-col gap-10">
-						<span className="hero-eyebrow inline-flex items-center gap-2 w-fit font-mono text-xs tracking-widest uppercase border border-foreground/20 rounded-full px-4 py-1.5 text-foreground/50">
-							<span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" aria-hidden="true" />
+						<span className="hero-eyebrow inline-flex items-center gap-2 w-fit font-mono text-[10px] tracking-widest uppercase border border-foreground/20 rounded-full px-4 py-1.5 text-foreground/50">
+							<span
+								className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"
+								aria-hidden="true"
+							/>
 							Predictive Parametric Micro-Insurance
 						</span>
 
@@ -193,14 +227,20 @@ export default function Home_1() {
 								0 claims.
 							</span>
 							<span className="hero-line font-sans text-[clamp(2rem,4.5vw,4rem)] font-light leading-[1.1] tracking-tight text-foreground/45">
-								money before{" "}<span className="whitespace-nowrap">the{" "}
-								<span
-									ref={wordRef}
-									className="inline-block whitespace-nowrap text-foreground font-normal"
-								>
-									{DISRUPTIONS[0]}
-								</span>{" "}
-								<span ref={stopsRef} className="inline-block">stops.</span></span>
+								money before{" "}
+								<span className="whitespace-nowrap">
+									the{" "}
+									<span
+										ref={wordRef}
+										className="inline-block whitespace-nowrap text-foreground font-normal">
+										{DISRUPTIONS[0]}
+									</span>{" "}
+									<span
+										ref={stopsRef}
+										className="inline-block">
+										stops.
+									</span>
+								</span>
 							</span>
 						</h1>
 
@@ -214,39 +254,101 @@ export default function Home_1() {
 						<div className="hero-cta flex items-center gap-5 flex-wrap">
 							<ScrollLink
 								href="#how"
-								className="primary-btn text-sm px-5 py-2 gap-2"
-							>
+								className="primary-btn text-sm px-5 py-2 gap-2">
 								See How It Works
-								<IconChevronRight size={15} aria-hidden="true" />
+								<IconChevronRight
+									size={15}
+									aria-hidden="true"
+								/>
 							</ScrollLink>
 							<ScrollLink
 								href="#pillars"
-								className="flex items-center gap-1.5 text-sm text-foreground/55 hover:text-foreground transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
-							>
+								className="flex items-center gap-1.5 text-sm text-foreground/55 hover:text-foreground transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded">
 								Our Differentiators
-								<IconArrowRight size={14} aria-hidden="true" />
+								<IconArrowRight
+									size={14}
+									aria-hidden="true"
+								/>
 							</ScrollLink>
 						</div>
 					</div>
 
-					{/* Right visual */}
-					<div className="hero-visual flex-1 hidden md:flex items-center justify-center" aria-hidden="true">
-						<div className="relative w-64 h-64">
-							<div className="ring-1 absolute inset-0 rounded-full border-2 border-foreground/40" />
-							<div className="ring-2 absolute -inset-8 rounded-full border-2 border-foreground/30" />
-							<div className="ring-3 absolute -inset-16 rounded-full border-2 border-foreground/20" />
-							<div className="card-inner absolute inset-8 rounded-2xl bg-foreground text-background flex flex-col items-center justify-center gap-3 shadow-2xl">
-								<IconShieldCheck size={32} className="shield-icon text-accent" aria-hidden="true" />
-								<div className="text-center">
-									<div className="font-black text-3xl leading-none">₹5</div>
-									<div className="font-mono text-[9px] text-background/40 tracking-widest mt-1.5 uppercase">
-										per shift
-									</div>
+					{/* Right visual — three floating cards */}
+					<div
+						className="flex-1 hidden md:flex items-center justify-center"
+						aria-hidden="true">
+						<div className="relative w-[480px] h-[420px] select-none">
+							{/* Card 1 — Rain Alert (back-left) */}
+							<div className="float-card-1 absolute left-0 top-10 w-52 bg-foreground text-background rounded-2xl p-5 shadow-xl">
+								<div className="flex items-center gap-2 mb-4">
+									<IconCloudRain
+										size={16}
+										className="text-accent"
+										aria-hidden="true"
+									/>
+									<span className="font-mono text-[9px] tracking-widest uppercase text-background/40">
+										Alert
+									</span>
 								</div>
-								<div className="w-16 h-px bg-background/10" />
-								<div className="font-mono text-[9px] text-background/30 tracking-wider uppercase">
-									Active Coverage
+								<p className="font-sans font-bold text-sm leading-snug mb-1">
+									Rain detected
+								</p>
+								<p className="font-mono text-[9px] text-background/35 tracking-wide">
+									Velachery · 600042
+								</p>
+								<p className="font-mono text-[9px] text-background/35 tracking-wide">
+									8.2 mm/hr · 19:34
+								</p>
+							</div>
+
+							{/* Card 2 — Coverage Active (front-center) */}
+							<div className="float-card-2 absolute left-[110px] top-[150px] w-56 bg-foreground text-background rounded-2xl p-5 shadow-2xl ring-1 ring-accent/30 z-10">
+								<div className="flex items-center gap-2 mb-4">
+									<IconShieldCheck
+										size={16}
+										className="text-accent"
+										aria-hidden="true"
+									/>
+									<span className="font-mono text-[9px] tracking-widest uppercase text-background/40">
+										Coverage
+									</span>
 								</div>
+								<div className="font-black text-4xl leading-none text-accent mb-2">
+									₹5
+								</div>
+								<p className="font-mono text-[9px] text-background/35 tracking-widest uppercase mb-3">
+									Per shift · Active
+								</p>
+								<div className="w-full h-px bg-background/10 mb-3" />
+								<div className="flex items-center gap-1.5">
+									<span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+									<span className="font-mono text-[9px] text-background/40 tracking-wide uppercase">
+										Protected
+									</span>
+								</div>
+							</div>
+
+							{/* Card 3 — Payout Sent (back-right) */}
+							<div className="float-card-3 absolute right-0 top-[30px] w-52 bg-foreground text-background rounded-2xl p-5 shadow-xl">
+								<div className="flex items-center gap-2 mb-4">
+									<IconWallet
+										size={16}
+										className="text-emerald-400"
+										aria-hidden="true"
+									/>
+									<span className="font-mono text-[9px] tracking-widest uppercase text-background/40">
+										Payout
+									</span>
+								</div>
+								<p className="font-black text-2xl leading-none text-emerald-400 mb-1">
+									₹420
+								</p>
+								<p className="font-mono text-[9px] text-background/35 tracking-wide mb-0.5">
+									UPI · 0.8s transfer
+								</p>
+								<p className="font-mono text-[9px] text-background/25 tracking-wide">
+									Before rain stops
+								</p>
 							</div>
 						</div>
 					</div>
