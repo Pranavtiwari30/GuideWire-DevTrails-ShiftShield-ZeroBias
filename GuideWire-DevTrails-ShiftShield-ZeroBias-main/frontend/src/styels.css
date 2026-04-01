@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+:root {
+	--background: #d4cac4;
+	--foreground: #171717;
+	--accent: #00aaff;
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-accent: var(--accent);
+	--font-sans: var(--font-outfit);
+	--font-mono: var(--font-geist-mono);
+}
+
+/* Skip to main content */
+.skip-link {
+	position: absolute;
+	top: -100%;
+	left: 1rem;
+	z-index: 9999;
+	padding: 0.5rem 1rem;
+	background: var(--foreground);
+	color: var(--background);
+	font-size: 0.875rem;
+	border-radius: 0 0 0.5rem 0.5rem;
+	transition: top 0.2s;
+}
+.skip-link:focus {
+	top: 0;
+}
+
+/* Balanced headings */
+h1, h2, h3 {
+	text-wrap: balance;
+}
+
+/* Scroll offset for fixed navbar */
+[id] {
+	scroll-margin-top: 6rem;
+}
+
+@layer components {
+	.primary-btn {
+		@apply bg-foreground text-background rounded-[0.55rem] px-4 py-1.5 flex items-center gap-1 cursor-pointer active:scale-97 duration-300 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+	}
+}
