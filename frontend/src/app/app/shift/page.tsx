@@ -5,12 +5,8 @@ import Link from "next/link";
 import { useRider } from "@/components/app/RiderProvider";
 import { api, type Shift } from "@/lib/api";
 import {
-  IconShieldCheck,
-  IconShieldOff,
-  IconLoader2,
-  IconMapPin,
-  IconClock,
-  IconArrowRight,
+  IconShieldCheck, IconShieldOff, IconLoader2,
+  IconMapPin, IconClock, IconArrowRight, IconX,
 } from "@tabler/icons-react";
 
 export default function ShiftPage() {
@@ -26,199 +22,168 @@ export default function ShiftPage() {
 
   const fetchActive = useCallback(async () => {
     if (!riderId) return;
-    try {
-      const s = await api.shift.active(riderId);
-      setActiveShift(s);
-    } catch {
-      setActiveShift(null);
-    } finally {
-      setLoading(false);
-    }
+    try { setActiveShift(await api.shift.active(riderId)); }
+    catch { setActiveShift(null); }
+    finally { setLoading(false); }
   }, [riderId]);
 
   useEffect(() => {
-    if (!riderId) {
-      router.push("/app");
-      return;
-    }
+    if (!riderId) { router.push("/app"); return; }
     fetchActive();
   }, [riderId, router, fetchActive]);
 
   async function handleStart(e: React.FormEvent) {
     e.preventDefault();
     if (!riderId) return;
-    setError("");
-    setSuccess("");
-    setStartLoading(true);
+    setError(""); setSuccess(""); setStartLoading(true);
     try {
-      const s = await api.shift.start({ rider_id: riderId, pincode });
-      setActiveShift(s);
-      setSuccess("Coverage activated. ShiftShield is monitoring your shift.");
+      setActiveShift(await api.shift.start({ rider_id: riderId, pincode }));
+      setSuccess("Coverage activated.");
       setPincode("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start shift");
-    } finally {
-      setStartLoading(false);
-    }
+    } finally { setStartLoading(false); }
   }
 
   async function handleEnd() {
     if (!riderId || !activeShift) return;
-    setError("");
-    setSuccess("");
-    setEndLoading(true);
+    setError(""); setSuccess(""); setEndLoading(true);
     try {
       await api.shift.end({ shift_id: activeShift.shift_id, rider_id: riderId });
-      setSuccess("Shift ended. Coverage deactivated.");
+      setSuccess("Shift ended.");
       setActiveShift(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to end shift");
-    } finally {
-      setEndLoading(false);
-    }
+    } finally { setEndLoading(false); }
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <IconLoader2 size={24} className="animate-spin text-foreground/30" />
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-[40vh]">
+      <IconLoader2 size={20} className="animate-spin text-foreground/30" />
+    </div>
+  );
 
   return (
-    <div className="space-y-5 max-w-lg">
-      <div>
-        <p className="font-mono text-[9px] tracking-widest uppercase text-foreground/35 mb-2">
-          Shift Management
-        </p>
-        <h1 className="font-sans font-black text-3xl tracking-tight leading-none">
-          {activeShift ? "Coverage Active" : "Start Coverage"}
-        </h1>
+    <div className="space-y-4">
+      {/* Page header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="font-mono text-[9px] tracking-widest uppercase text-foreground/35 mb-1">Shift</p>
+          <h1 className="font-sans font-black text-2xl tracking-tight leading-none">
+            {activeShift ? "Coverage Active" : "Start Coverage"}
+          </h1>
+        </div>
+        {activeShift && (
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+            <span className="font-mono text-[9px] tracking-widest uppercase text-foreground/40">Live</span>
+          </div>
+        )}
       </div>
 
       {activeShift ? (
-        <div className="bg-foreground text-background rounded-2xl p-7 space-y-6">
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                <span className="font-mono text-[9px] tracking-widest uppercase text-background/35">
-                  Live
-                </span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Main shift card */}
+          <div className="md:col-span-2 bg-foreground text-background rounded-2xl p-5">
+            <div className="flex items-start justify-between mb-5">
+              <div>
+                <p className="font-mono text-[9px] tracking-widest uppercase text-background/30 mb-1">{activeShift.shift_id}</p>
+                <p className="font-sans font-black text-2xl leading-none">Shift Protected</p>
               </div>
-              <h2 className="font-sans font-black text-2xl">{activeShift.shift_id}</h2>
+              <IconShieldCheck size={24} className="text-accent" />
             </div>
-            <IconShieldCheck size={32} className="text-accent" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-background/8 rounded-xl p-4">
-              <IconMapPin size={14} className="text-accent mb-2" />
-              <p className="font-mono text-[9px] uppercase tracking-widest text-background/30 mb-1">
-                Pincode
-              </p>
-              <p className="font-sans font-bold text-lg">{activeShift.pincode}</p>
+            <div className="grid grid-cols-2 gap-3 mb-5">
+              <div className="bg-background/8 rounded-xl p-3">
+                <IconMapPin size={12} className="text-accent mb-2" />
+                <p className="font-mono text-[9px] uppercase tracking-widest text-background/30 mb-0.5">Pincode</p>
+                <p className="font-sans font-bold text-base">{activeShift.pincode}</p>
+              </div>
+              <div className="bg-background/8 rounded-xl p-3">
+                <IconClock size={12} className="text-accent mb-2" />
+                <p className="font-mono text-[9px] uppercase tracking-widest text-background/30 mb-0.5">Started</p>
+                <p className="font-sans font-bold text-base">
+                  {new Date(activeShift.shift_start).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </div>
             </div>
-            <div className="bg-background/8 rounded-xl p-4">
-              <IconClock size={14} className="text-accent mb-2" />
-              <p className="font-mono text-[9px] uppercase tracking-widest text-background/30 mb-1">
-                Started
+            {(error || success) && (
+              <p className={`font-mono text-[10px] mb-3 ${error ? "text-red-400" : "text-emerald-400"}`}>
+                {error || success}
               </p>
-              <p className="font-sans font-bold text-lg">
-                {new Date(activeShift.shift_start).toLocaleTimeString("en-IN", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
-            </div>
-          </div>
-
-          {(error || success) && (
-            <p
-              className={`font-mono text-[10px] tracking-wide ${
-                error ? "text-red-400" : "text-emerald-400"
-              }`}
-            >
-              {error || success}
-            </p>
-          )}
-
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={handleEnd}
-              disabled={endLoading}
-              className="w-full bg-background/10 hover:bg-background/15 text-background border border-background/20 rounded-xl py-3 text-sm font-medium transition-colors disabled:opacity-40 flex items-center justify-center gap-2 cursor-pointer"
-            >
-              {endLoading ? (
-                <IconLoader2 size={16} className="animate-spin" />
-              ) : (
-                "End Shift"
-              )}
+            )}
+            <button onClick={handleEnd} disabled={endLoading}
+              className="flex items-center gap-2 bg-background/10 hover:bg-background/15 border border-background/15 text-background rounded-xl px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40 cursor-pointer">
+              {endLoading ? <IconLoader2 size={14} className="animate-spin" /> : <IconX size={14} />}
+              End Shift
             </button>
+          </div>
+
+          {/* Side actions */}
+          <div className="flex flex-col gap-3">
             <Link
               href={`/app/claim?shift_id=${activeShift.shift_id}&pincode=${activeShift.pincode}&shift_start=${encodeURIComponent(activeShift.shift_start)}`}
-              className="w-full bg-accent/15 hover:bg-accent/20 text-accent border border-accent/30 rounded-xl py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2"
-            >
-              Evaluate Claim <IconArrowRight size={14} />
+              className="bg-foreground text-background rounded-2xl p-5 flex flex-col gap-3 hover:opacity-90 transition-opacity group flex-1">
+              <IconArrowRight size={16} className="text-accent" />
+              <div>
+                <p className="font-sans font-bold text-sm">Evaluate Claim</p>
+                <p className="font-mono text-[9px] text-background/35 mt-0.5">Check payout eligibility</p>
+              </div>
             </Link>
+            <div className="bg-foreground/5 border border-foreground/10 rounded-2xl p-4 flex-1">
+              <p className="font-mono text-[9px] tracking-widest uppercase text-foreground/30 mb-2">Coverage</p>
+              <p className="text-foreground/50 text-xs leading-relaxed">
+                Parametric triggers monitor rainfall at pincode {activeShift.pincode} in real-time.
+              </p>
+            </div>
           </div>
         </div>
       ) : (
-        <div className="bg-foreground text-background rounded-2xl p-7 space-y-5">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="font-mono text-[9px] tracking-widest uppercase text-background/30 mb-2">
-                No Active Coverage
-              </p>
-              <p className="text-background/50 text-sm leading-relaxed max-w-xs">
-                Enter your pincode to activate parametric coverage for your
-                current shift.
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Start shift form */}
+          <div className="md:col-span-2 bg-foreground text-background rounded-2xl p-5">
+            <div className="flex items-start justify-between mb-5">
+              <div>
+                <p className="font-mono text-[9px] tracking-widest uppercase text-background/30 mb-1">No Active Coverage</p>
+                <p className="text-background/50 text-sm leading-relaxed max-w-xs">
+                  Enter your current pincode to activate parametric shift coverage.
+                </p>
+              </div>
+              <IconShieldOff size={22} className="text-background/20 shrink-0" />
             </div>
-            <IconShieldOff size={28} className="text-background/20 shrink-0" />
+            <form onSubmit={handleStart} className="space-y-3">
+              <div>
+                <label className="font-mono text-[9px] tracking-widest uppercase text-background/40 block mb-1.5">Pincode</label>
+                <input value={pincode}
+                  onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  placeholder="600042" required maxLength={6} pattern="\d{6}"
+                  className="w-full bg-background/10 border border-background/15 rounded-lg px-3 py-2 text-background placeholder:text-background/20 focus:outline-none focus:border-accent/50 text-sm font-mono tracking-widest" />
+              </div>
+              {(error || success) && (
+                <p className={`font-mono text-[10px] ${error ? "text-red-400" : "text-emerald-400"}`}>{error || success}</p>
+              )}
+              <button type="submit" disabled={startLoading || pincode.length !== 6}
+                className="primary-btn py-2.5 disabled:opacity-40">
+                {startLoading ? <IconLoader2 size={14} className="animate-spin" /> : <>Activate Coverage <IconArrowRight size={14} /></>}
+              </button>
+            </form>
           </div>
 
-          {success && (
-            <p className="text-emerald-400 font-mono text-[10px] tracking-wide">
-              {success}
-            </p>
-          )}
-
-          <form onSubmit={handleStart} className="space-y-4">
-            <div>
-              <label className="font-mono text-[9px] tracking-widest uppercase text-background/40 block mb-1.5">
-                Pincode
-              </label>
-              <input
-                value={pincode}
-                onChange={(e) =>
-                  setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))
-                }
-                placeholder="600042"
-                required
-                maxLength={6}
-                pattern="\d{6}"
-                className="w-full bg-background/10 border border-background/20 rounded-lg px-3 py-2.5 text-background placeholder:text-background/25 focus:outline-none focus:border-accent/60 text-sm font-mono tracking-widest"
-              />
+          {/* Info panel */}
+          <div className="bg-foreground/5 border border-foreground/10 rounded-2xl p-5">
+            <p className="font-mono text-[9px] tracking-widest uppercase text-foreground/30 mb-3">How it works</p>
+            <div className="space-y-3">
+              {[
+                "Enter your pincode to define your coverage zone",
+                "ShiftShield monitors rainfall at that pincode in real-time",
+                "If thresholds are met, payout triggers automatically",
+              ].map((step, i) => (
+                <div key={i} className="flex gap-2.5">
+                  <span className="font-mono text-[9px] text-foreground/25 mt-0.5 shrink-0">0{i + 1}</span>
+                  <p className="text-foreground/45 text-xs leading-relaxed">{step}</p>
+                </div>
+              ))}
             </div>
-            {error && (
-              <p className="text-red-400 font-mono text-[10px] tracking-wide">
-                {error}
-              </p>
-            )}
-            <button
-              type="submit"
-              disabled={startLoading || pincode.length !== 6}
-              className="primary-btn w-full justify-center py-3 disabled:opacity-40"
-            >
-              {startLoading ? (
-                <IconLoader2 size={16} className="animate-spin" />
-              ) : (
-                "Activate Coverage"
-              )}
-            </button>
-          </form>
+          </div>
         </div>
       )}
     </div>

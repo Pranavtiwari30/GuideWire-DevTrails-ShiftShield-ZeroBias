@@ -12,7 +12,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <RiderProvider>
       <div className="min-h-screen bg-background">
         <AppNav />
-        <main className="px-4 md:px-8 pt-24 pb-24 md:pb-8 max-w-4xl mx-auto">
+        <main className="px-4 md:px-8 pt-20 pb-24 md:pb-8 max-w-4xl mx-auto">
           {children}
         </main>
       </div>
