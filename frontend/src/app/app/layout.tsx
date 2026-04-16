@@ -1,21 +1,19 @@
 import { RiderProvider } from "@/components/app/RiderProvider";
-import { AppNav } from "@/components/app/AppNav";
+import { AppSidebar } from "@/components/app/AppSidebar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ShiftShield — Rider App",
-  description: "Manage your ShiftShield coverage",
+	title: "ShiftShield",
+	description: "Manage your ShiftShield coverage",
 };
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <RiderProvider>
-      <div className="min-h-screen bg-background">
-        <AppNav />
-        <main className="px-4 md:px-8 pt-20 pb-24 md:pb-8 max-w-4xl mx-auto">
-          {children}
-        </main>
-      </div>
-    </RiderProvider>
-  );
+	return (
+		<RiderProvider>
+			<div className="min-h-screen bg-background md:flex">
+				<AppSidebar />
+				<main className="flex-1 min-h-screen overflow-auto pb-20 md:pb-0">{children}</main>
+			</div>
+		</RiderProvider>
+	);
 }

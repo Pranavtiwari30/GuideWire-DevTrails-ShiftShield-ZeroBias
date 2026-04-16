@@ -27,6 +27,10 @@ async def evaluate_claim(body: EvaluateClaimRequest):
             detail=f"Shift {body.shift_id} not found for rider {body.rider_id}"
         )
 
+    # Auto-populate from shift record if not provided
+    pincode     = body.pincode     or shift["pincode"]
+    shift_start = body.shift_start or shift["shift_start"].isoformat()
+
     # Rate limit — one evaluation per 15 min window
     window_start = datetime.now(timezone.utc) - timedelta(minutes=15)
     recent = await db.claims.find_one({
@@ -46,10 +50,10 @@ async def evaluate_claim(body: EvaluateClaimRequest):
             },
         )
 
-    print(f"[Claim] Evaluating shift={body.shift_id} rider={body.rider_id} pincode={body.pincode}")
+    print(f"[Claim] Evaluating shift={body.shift_id} rider={body.rider_id} pincode={pincode}")
 
     # Full pipeline
-    scoring  = await run_scoring_engine(body.rider_id, body.pincode, body.shift_start)
+    scoring  = await run_scoring_engine(body.rider_id, pincode, shift_start)
     decision = make_decision(scoring)
     payout   = run_payout_engine(scoring, decision)
 

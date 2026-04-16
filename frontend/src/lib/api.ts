@@ -7,9 +7,15 @@ async function req<T>(path: string, options?: RequestInit): Promise<T> {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(
-      typeof err.detail === "string" ? err.detail : JSON.stringify(err.detail)
-    );
+    let message: string;
+    if (typeof err.detail === "string") {
+      message = err.detail;
+    } else if (Array.isArray(err.detail)) {
+      message = err.detail.map((e: { msg: string }) => e.msg).join("; ");
+    } else {
+      message = "Something went wrong. Please try again.";
+    }
+    throw new Error(message);
   }
   return res.json() as Promise<T>;
 }
@@ -34,6 +40,15 @@ export interface Shift {
   shift_start: string;
   status: string;
   message?: string;
+}
+
+export interface ShiftRecord {
+  shift_id: string;
+  rider_id: string;
+  pincode: string;
+  shift_start: string;
+  shift_end: string | null;
+  status: "ACTIVE" | "ENDED";
 }
 
 export interface ClaimResult {
@@ -102,6 +117,23 @@ export const api = {
         body: JSON.stringify(data),
       }),
     get: (riderId: string) => req<RiderProfile>(`/rider/${riderId}`),
+    update: (riderId: string, data: Partial<Omit<RiderProfile, "rider_id" | "status" | "created_at">>) =>
+      req<RiderProfile & { message: string }>(`/rider/${riderId}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    delete: (riderId: string) =>
+      req<{ message: string }>(`/rider/${riderId}`, { method: "DELETE" }),
+    forgotId: (phone: string) =>
+      req<{ message: string; masked_phone: string }>("/rider/forgot-id", {
+        method: "POST",
+        body: JSON.stringify({ phone }),
+      }),
+    verifyOtp: (phone: string, otp: string) =>
+      req<{ rider_id: string; name: string; message: string }>("/rider/verify-otp", {
+        method: "POST",
+        body: JSON.stringify({ phone, otp }),
+      }),
   },
   shift: {
     start: (data: { rider_id: string; pincode: string }) =>
@@ -112,13 +144,14 @@ export const api = {
         body: JSON.stringify(data),
       }),
     active: (riderId: string) => req<Shift>(`/shift/${riderId}/active`),
+    history: (riderId: string) => req<ShiftRecord[]>(`/shift/${riderId}/history`),
   },
   claim: {
     evaluate: (data: {
       shift_id: string;
       rider_id: string;
-      pincode: string;
-      shift_start: string;
+      pincode?: string;
+      shift_start?: string;
     }) =>
       req<ClaimResult>("/claim/evaluate", {
         method: "POST",
@@ -126,6 +159,8 @@ export const api = {
       }),
     status: (claimId: string) =>
       req<{ claim_id: string; status: string }>(`/claim/${claimId}/status`),
+    history: (riderId: string) =>
+      req<ClaimResult[]>(`/claim/rider/${riderId}`),
   },
   premium: {
     quote: (data: {

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-	--background: #d4cac4;
-	--foreground: #171717;
+	--background: #171717;
+	--foreground: #d4cac4;
 	--accent: #00aaff;
 }
 
@@ -32,7 +32,9 @@
 }
 
 /* Balanced headings */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
 	text-wrap: balance;
 }
 

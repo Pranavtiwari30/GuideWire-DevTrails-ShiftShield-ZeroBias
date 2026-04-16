@@ -55,7 +55,7 @@ export default function Navbar() {
 	return (
 		<header className="fixed top-4 left-4 right-4 z-999">
 			{/* Desktop / main bar */}
-			<div className="max-w-4xl mx-auto bg-foreground/80 backdrop-blur-md text-background pl-6 pr-1.5 py-1.5 rounded-2xl flex items-center justify-between gap-8">
+			<div className="max-w-4xl mx-auto bg-foreground/80 backdrop-blur-md text-background pl-6 pr-3 py-3 rounded-2xl flex items-center justify-between gap-8">
 				<Link
 					href={"/"}
 					className="text-2xl flex items-center select-none active:scale-97 duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg">

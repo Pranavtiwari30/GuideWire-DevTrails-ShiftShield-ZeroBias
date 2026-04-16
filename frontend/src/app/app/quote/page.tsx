@@ -1,167 +1,157 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useRider } from "@/components/app/RiderProvider";
 import { api, type PremiumQuote } from "@/lib/api";
-import { IconLoader2, IconShieldCheck, IconArrowLeft } from "@tabler/icons-react";
+import { IconLoader2, IconShieldCheck, IconArrowRight, IconCalculator } from "@tabler/icons-react";
 
-const TIER_COLOR: Record<string, string> = {
-  LOW: "text-emerald-400", MEDIUM: "text-yellow-400", HIGH: "text-red-400",
+const VEHICLE_LABELS: Record<string, string> = {
+  bike: "Bike", scooter: "Scooter", cycle: "Cycle", car: "Car",
+};
+const ZONE_LABELS: Record<string, string> = {
+  metro_core: "Metro Core", metro_suburb: "Metro Suburb", tier2: "Tier 2", rural: "Rural",
+};
+const ZONE_RISK: Record<string, string> = {
+  metro_core: "High rainfall density",
+  metro_suburb: "Moderate rainfall density",
+  tier2: "Variable weather patterns",
+  rural: "Lower disruption frequency",
 };
 
 export default function QuotePage() {
   const { riderId, profile } = useRider();
   const router = useRouter();
-  const [form, setForm] = useState({ pincode: "", zone_type: "metro_suburb", vehicle_type: "bike", coverage_days: 1 });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [quote, setQuote] = useState<PremiumQuote | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => { if (!riderId) router.push("/app"); }, [riderId, router]);
   useEffect(() => {
-    if (profile) setForm((f) => ({
-      ...f,
-      pincode: profile.pincode || f.pincode,
-      zone_type: profile.zone_type || f.zone_type,
-      vehicle_type: profile.vehicle_type || f.vehicle_type,
-    }));
-  }, [profile]);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!riderId) return;
-    setError(""); setLoading(true);
-    try { setQuote(await api.premium.quote({ ...form, rider_id: riderId })); }
-    catch (err) { setError(err instanceof Error ? err.message : "Failed"); }
-    finally { setLoading(false); }
-  }
+    if (!riderId) { router.push("/app"); return; }
+    if (!profile) return;
+    api.premium.quote({
+      rider_id: riderId,
+      pincode: profile.pincode,
+      zone_type: profile.zone_type,
+      vehicle_type: profile.vehicle_type,
+      coverage_days: 1,
+    })
+      .then(setQuote)
+      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load quote"))
+      .finally(() => setLoading(false));
+  }, [riderId, profile, router]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="min-h-screen flex flex-col">
+      <header className="py-5 border-b border-foreground/[0.12] px-6 flex items-center justify-between shrink-0">
         <div>
-          <p className="font-mono text-[9px] tracking-widest uppercase text-foreground/35 mb-1">Premium</p>
-          <h1 className="font-sans font-black text-2xl tracking-tight leading-none">
-            {quote ? "Your Quote" : "Get a Quote"}
-          </h1>
+          <h1 className="font-sans font-black text-xl leading-none tracking-tight">Quote</h1>
+          <p className="font-mono text-[10px] text-foreground/50 tracking-widest mt-0.5">Coverage</p>
         </div>
-        {quote && (
-          <button onClick={() => setQuote(null)}
-            className="flex items-center gap-1.5 font-mono text-[9px] tracking-widest uppercase text-foreground/35 hover:text-foreground/60 transition-colors cursor-pointer">
-            <IconArrowLeft size={11} /> New Quote
-          </button>
-        )}
-      </div>
+        <IconCalculator size={16} className="text-foreground/30" />
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {/* Form — always visible */}
-        <div className={`bg-foreground text-background rounded-2xl p-5 ${quote ? "md:col-span-1" : "md:col-span-2"}`}>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div>
-              <label className="font-mono text-[9px] tracking-widest uppercase text-background/40 block mb-1">Pincode</label>
-              <input value={form.pincode}
-                onChange={(e) => setForm((f) => ({ ...f, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) }))}
-                placeholder="600042" required maxLength={6}
-                className="w-full bg-background/10 border border-background/15 rounded-lg px-3 py-2 text-background placeholder:text-background/20 focus:outline-none focus:border-accent/50 text-sm font-mono tracking-widest" />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { key: "zone_type", label: "Zone", options: [["metro_core","Metro Core"],["metro_suburb","Metro Suburb"],["tier2","Tier 2"],["rural","Rural"]] },
-                { key: "vehicle_type", label: "Vehicle", options: [["bike","Bike"],["scooter","Scooter"],["cycle","Cycle"],["car","Car"]] },
-              ].map(({ key, label, options }) => (
-                <div key={key}>
-                  <label className="font-mono text-[9px] tracking-widest uppercase text-background/40 block mb-1">{label}</label>
-                  <select value={form[key as keyof typeof form]}
-                    onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
-                    className="w-full bg-background/10 border border-background/15 rounded-lg px-3 py-2 text-background focus:outline-none focus:border-accent/50 text-sm">
-                    {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                  </select>
-                </div>
-              ))}
-            </div>
-            <div>
-              <label className="font-mono text-[9px] tracking-widest uppercase text-background/40 block mb-1">Coverage Days</label>
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 3, 7].map((d) => (
-                  <button key={d} type="button" onClick={() => setForm((f) => ({ ...f, coverage_days: d }))}
-                    className={`py-2 rounded-lg border font-mono text-sm font-bold transition-colors cursor-pointer ${
-                      form.coverage_days === d ? "border-accent/60 text-accent bg-accent/10" : "border-background/20 text-background/35 hover:border-background/40"
-                    }`}>
-                    {d}d
-                  </button>
-                ))}
+      <div className="flex-1 p-6 space-y-5">
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[30vh]">
+            <IconLoader2 size={20} className="animate-spin text-foreground/30" />
+          </div>
+        ) : error ? (
+          <p className="text-red-400 font-mono text-sm">{error}</p>
+        ) : quote ? (
+          <>
+            {/* KPI row */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="bg-foreground/[0.07] border border-foreground/[0.12] rounded-2xl p-5">
+                <p className="font-mono text-xs uppercase tracking-widest text-foreground/45 mb-2">Per Shift</p>
+                <p className="font-sans font-black text-3xl leading-none text-accent">
+                  ₹{quote.premium_inr.toFixed(2)}
+                </p>
+                <p className="font-mono text-[10px] text-foreground/40 mt-1.5">base premium</p>
               </div>
-            </div>
-            {error && <p className="text-red-400 font-mono text-[10px]">{error}</p>}
-            <button type="submit" disabled={loading || form.pincode.length !== 6}
-              className="primary-btn py-2.5 w-full justify-center disabled:opacity-40">
-              {loading ? <IconLoader2 size={14} className="animate-spin" /> : "Get Quote"}
-            </button>
-          </form>
-        </div>
-
-        {/* Quote result */}
-        {quote ? (
-          <div className="md:col-span-2 space-y-3">
-            {/* Top stats */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-foreground text-background rounded-2xl p-4 col-span-1">
-                <div className="flex items-start justify-between mb-2">
-                  <p className="font-mono text-[9px] uppercase tracking-widest text-background/30">Premium</p>
-                  <IconShieldCheck size={14} className="text-accent" />
-                </div>
-                <p className="font-sans font-black text-3xl leading-none">₹{quote.premium_inr}</p>
-                <p className="font-mono text-[9px] text-background/30 mt-1">{quote.coverage_days}d coverage</p>
+              <div className="bg-foreground/[0.07] border border-foreground/[0.12] rounded-2xl p-5">
+                <p className="font-mono text-xs uppercase tracking-widest text-foreground/45 mb-2">Max Payout</p>
+                <p className="font-sans font-black text-3xl leading-none">
+                  ₹{quote.max_payout_inr.toFixed(0)}
+                </p>
+                <p className="font-mono text-[10px] text-foreground/40 mt-1.5">when all 5 signals trigger</p>
               </div>
-              <div className="bg-foreground text-background rounded-2xl p-4">
-                <p className="font-mono text-[9px] uppercase tracking-widest text-background/30 mb-2">Max Payout</p>
-                <p className="font-sans font-black text-3xl leading-none text-accent">₹{quote.max_payout_inr}</p>
-              </div>
-              <div className="bg-foreground text-background rounded-2xl p-4">
-                <p className="font-mono text-[9px] uppercase tracking-widest text-background/30 mb-2">Risk Tier</p>
-                <p className={`font-sans font-black text-3xl leading-none ${TIER_COLOR[quote.disruption_tier] ?? "text-background"}`}>
-                  {quote.disruption_tier}
+              <div className="bg-accent/[0.06] border border-accent/20 rounded-2xl p-5 col-span-2 md:col-span-1">
+                <p className="font-mono text-xs uppercase tracking-widest text-foreground/45 mb-2">Your Zone</p>
+                <p className="font-sans font-bold text-base leading-none">
+                  {ZONE_LABELS[quote.zone_type] ?? quote.zone_type}
+                </p>
+                <p className="font-mono text-[10px] text-foreground/40 mt-1.5">
+                  {ZONE_RISK[quote.zone_type] ?? quote.disruption_tier}
                 </p>
               </div>
             </div>
-            {/* Breakdown */}
-            <div className="bg-foreground text-background rounded-2xl p-5">
-              <p className="font-mono text-[9px] uppercase tracking-widest text-background/30 mb-3">Breakdown</p>
-              <div className="space-y-2">
-                {[
-                  ["Base daily rate", `₹${quote.breakdown.base_daily}`],
-                  ["Vehicle multiplier", `${quote.breakdown.vehicle_multiplier}×`],
-                  ["Risk multiplier", `${quote.breakdown.risk_multiplier}×`],
-                  ["Coverage days", `${quote.coverage_days}`],
-                ].map(([label, value]) => (
-                  <div key={label} className="flex items-center justify-between text-sm">
-                    <span className="text-background/45">{label}</span>
-                    <span className="font-mono text-background/65">{value}</span>
+
+            {/* Breakdown + signals */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="bg-foreground/[0.07] border border-foreground/[0.12] rounded-2xl p-6">
+                <p className="font-mono text-xs uppercase tracking-widest text-foreground/45 mb-4">Pricing Breakdown</p>
+                <div className="space-y-1">
+                  {[
+                    ["Base daily rate", `₹${quote.breakdown.base_daily.toFixed(2)}`],
+                    [`Vehicle (${VEHICLE_LABELS[quote.vehicle_type] ?? quote.vehicle_type})`, `×${quote.breakdown.vehicle_multiplier.toFixed(1)}`],
+                    [`Zone risk (${quote.disruption_tier})`, `×${quote.breakdown.risk_multiplier.toFixed(1)}`],
+                  ].map(([label, value]) => (
+                    <div key={label} className="flex items-center justify-between py-2.5 border-b border-foreground/[0.07]">
+                      <span className="text-sm text-foreground/55">{label}</span>
+                      <span className="font-mono text-sm font-bold">{value}</span>
+                    </div>
+                  ))}
+                  <div className="flex items-center justify-between pt-3">
+                    <span className="font-sans font-bold text-base">Your rate</span>
+                    <span className="font-sans font-black text-xl text-accent">₹{quote.premium_inr.toFixed(2)}/shift</span>
                   </div>
-                ))}
-                <div className="flex items-center justify-between text-sm pt-2 border-t border-background/10">
-                  <span className="text-background/60 font-medium">Total</span>
-                  <span className="font-mono font-bold text-accent">₹{quote.premium_inr}</span>
                 </div>
               </div>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-foreground/5 border border-foreground/10 rounded-2xl p-5">
-            <p className="font-mono text-[9px] tracking-widest uppercase text-foreground/30 mb-3">Coverage Tiers</p>
-            <div className="space-y-3">
-              {[["1 day", "₹9–15", "Up to ₹200"], ["3 days", "₹20–35", "Up to ₹450"], ["7 days", "₹40–65", "Up to ₹800"]].map(([days, price, payout]) => (
-                <div key={days} className="flex items-center justify-between">
-                  <span className="text-foreground/45 text-sm">{days}</span>
-                  <div className="text-right">
-                    <span className="font-mono text-xs text-foreground/60">{price}</span>
-                    <span className="font-mono text-[9px] text-foreground/30 block">{payout}</span>
-                  </div>
+
+              <div className="bg-foreground/[0.07] border border-foreground/[0.12] rounded-2xl p-6">
+                <p className="font-mono text-xs uppercase tracking-widest text-foreground/45 mb-4">What Triggers Payout</p>
+                <div className="space-y-3">
+                  {[
+                    ["M1 Weather",      "Rainfall above threshold at your pincode"],
+                    ["M2 App Activity", "Reduced delivery orders during shift"],
+                    ["M3 Rank Drop",    "Your rank fell due to weather disruption"],
+                    ["M4 Shift Impact", "Shift timing within coverage window"],
+                    ["M5 Disruption",   "Area-wide disruption index triggered"],
+                  ].map(([label, desc], i) => (
+                    <div key={i} className="flex gap-3">
+                      <span className="font-mono text-[10px] text-foreground/35 mt-0.5 shrink-0 w-4">0{i + 1}</span>
+                      <div>
+                        <p className="text-sm font-medium text-foreground/70">{label}</p>
+                        <p className="font-mono text-[10px] text-foreground/40 mt-0.5">{desc}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+                <p className="font-mono text-[10px] text-foreground/35 mt-4 pt-4 border-t border-foreground/[0.08]">
+                  All 5 signals must trigger for full payout.
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+
+            {/* CTA */}
+            <div className="bg-accent/[0.06] border border-accent/20 rounded-2xl p-6 flex items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <IconShieldCheck size={14} className="text-accent" />
+                  <p className="font-sans font-bold text-base leading-none">Ready to activate coverage?</p>
+                </div>
+                <p className="font-mono text-xs text-foreground/45 tracking-wide">
+                  ₹{quote.premium_inr.toFixed(2)} is deducted automatically when your shift starts.
+                </p>
+              </div>
+              <Link href="/app/shift"
+                className="flex items-center gap-2 bg-accent text-background font-mono text-xs tracking-widest uppercase px-5 py-3 rounded-xl hover:bg-accent/90 transition-colors shrink-0 font-bold">
+                Start Shift <IconArrowRight size={13} />
+              </Link>
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );

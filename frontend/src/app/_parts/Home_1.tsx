@@ -277,76 +277,76 @@ export default function Home_1() {
 					<div
 						className="flex-1 hidden md:flex items-center justify-center"
 						aria-hidden="true">
-						<div className="relative w-[480px] h-[420px] select-none">
+						<div className="relative w-[520px] h-[460px] select-none">
 							{/* Card 1 — Rain Alert (back-left) */}
-							<div className="float-card-1 absolute left-0 top-10 w-52 bg-foreground text-background rounded-2xl p-5 shadow-xl">
+							<div className="float-card-1 absolute left-0 top-10 w-60 bg-foreground/[0.07] border border-foreground/[0.15] rounded-2xl p-6 shadow-xl backdrop-blur-sm">
 								<div className="flex items-center gap-2 mb-4">
 									<IconCloudRain
 										size={16}
 										className="text-accent"
 										aria-hidden="true"
 									/>
-									<span className="font-mono text-[9px] tracking-widest uppercase text-background/40">
+									<span className="font-mono text-[9px] tracking-widest uppercase text-foreground/45">
 										Alert
 									</span>
 								</div>
-								<p className="font-sans font-bold text-sm leading-snug mb-1">
+								<p className="font-sans font-bold text-base leading-snug mb-2 text-foreground">
 									Rain detected
 								</p>
-								<p className="font-mono text-[9px] text-background/35 tracking-wide">
+								<p className="font-mono text-[10px] text-foreground/45 tracking-wide">
 									Velachery · 600042
 								</p>
-								<p className="font-mono text-[9px] text-background/35 tracking-wide">
+								<p className="font-mono text-[10px] text-foreground/45 tracking-wide">
 									8.2 mm/hr · 19:34
 								</p>
 							</div>
 
 							{/* Card 2 — Coverage Active (front-center) */}
-							<div className="float-card-2 absolute left-[110px] top-[150px] w-56 bg-foreground text-background rounded-2xl p-5 shadow-2xl ring-1 ring-accent/30 z-10">
+							<div className="float-card-2 absolute left-[120px] top-[160px] w-64 bg-foreground/[0.07] border border-accent/25 rounded-2xl p-6 shadow-2xl z-10">
 								<div className="flex items-center gap-2 mb-4">
 									<IconShieldCheck
 										size={16}
 										className="text-accent"
 										aria-hidden="true"
 									/>
-									<span className="font-mono text-[9px] tracking-widest uppercase text-background/40">
+									<span className="font-mono text-[9px] tracking-widest uppercase text-foreground/45">
 										Coverage
 									</span>
 								</div>
-								<div className="font-black text-4xl leading-none text-accent mb-2">
+								<div className="font-black text-5xl leading-none text-accent mb-2">
 									₹5
 								</div>
-								<p className="font-mono text-[9px] text-background/35 tracking-widest uppercase mb-3">
+								<p className="font-mono text-[10px] text-foreground/45 tracking-widest uppercase mb-3">
 									Per shift · Active
 								</p>
-								<div className="w-full h-px bg-background/10 mb-3" />
+								<div className="w-full h-px bg-foreground/[0.08] mb-3" />
 								<div className="flex items-center gap-1.5">
 									<span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-									<span className="font-mono text-[9px] text-background/40 tracking-wide uppercase">
+									<span className="font-mono text-[10px] text-foreground/50 tracking-wide uppercase">
 										Protected
 									</span>
 								</div>
 							</div>
 
 							{/* Card 3 — Payout Sent (back-right) */}
-							<div className="float-card-3 absolute right-0 top-[30px] w-52 bg-foreground text-background rounded-2xl p-5 shadow-xl">
+							<div className="float-card-3 absolute right-0 top-[30px] w-60 bg-foreground/[0.07] border border-foreground/[0.15] rounded-2xl p-6 shadow-xl backdrop-blur-sm">
 								<div className="flex items-center gap-2 mb-4">
 									<IconWallet
 										size={16}
 										className="text-emerald-400"
 										aria-hidden="true"
 									/>
-									<span className="font-mono text-[9px] tracking-widest uppercase text-background/40">
+									<span className="font-mono text-[9px] tracking-widest uppercase text-foreground/45">
 										Payout
 									</span>
 								</div>
-								<p className="font-black text-2xl leading-none text-emerald-400 mb-1">
+								<p className="font-black text-3xl leading-none text-emerald-400 mb-2">
 									₹420
 								</p>
-								<p className="font-mono text-[9px] text-background/35 tracking-wide mb-0.5">
+								<p className="font-mono text-[10px] text-foreground/45 tracking-wide mb-0.5">
 									UPI · 0.8s transfer
 								</p>
-								<p className="font-mono text-[9px] text-background/25 tracking-wide">
+								<p className="font-mono text-[10px] text-foreground/35 tracking-wide">
 									Before rain stops
 								</p>
 							</div>

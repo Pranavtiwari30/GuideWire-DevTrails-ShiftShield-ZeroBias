@@ -127,8 +127,8 @@ class StartShiftResponse(BaseModel):
 class EvaluateClaimRequest(BaseModel):
     shift_id: str
     rider_id: str
-    pincode: str
-    shift_start: str
+    pincode: Optional[str] = None
+    shift_start: Optional[str] = None
 
 class EvaluateClaimResponse(BaseModel):
     claim_id: str

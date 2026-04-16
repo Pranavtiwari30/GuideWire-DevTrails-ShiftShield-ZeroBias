@@ -17,7 +17,7 @@ _ZONE_BASE = {
 _VEHICLE_RISK = {
     "bike":     1.0,
     "cycle":    0.85,
-    "scooter":  1.0,
+    "scooter":  1.1,
     "car":      1.2,
 }
 
@@ -61,9 +61,7 @@ async def get_premium_quote(body: PremiumQuoteRequest):
     daily_rate      = base_weekly / 7
     raw_premium     = daily_rate * body.coverage_days * vehicle_mult * disruption_mult
 
-    # Round to nearest 5
-    final_premium   = round(raw_premium / 5) * 5
-    final_premium   = max(final_premium, 9)   # minimum ₹9
+    final_premium   = max(round(raw_premium, 2), 2.0)  # minimum ₹2
 
     # Max payout rider is eligible for
     max_payout = {1: 200, 3: 450, 7: 800}[body.coverage_days]

@@ -84,6 +84,24 @@ async def end_shift(body: dict):
     }
 
 
+@router.get("/{rider_id}/history")
+async def get_shift_history(rider_id: str):
+    db = get_db()
+    cursor = db.shifts.find({"rider_id": rider_id}).sort("shift_start", -1).limit(50)
+    docs = await cursor.to_list(50)
+    return [
+        {
+            "shift_id":    d["shift_id"],
+            "rider_id":    d["rider_id"],
+            "pincode":     d["pincode"],
+            "shift_start": d["shift_start"].isoformat(),
+            "shift_end":   d["shift_end"].isoformat() if d.get("shift_end") else None,
+            "status":      d["status"],
+        }
+        for d in docs
+    ]
+
+
 @router.get("/{rider_id}/active")
 async def get_active_shift(rider_id: str):
     db  = get_db()
