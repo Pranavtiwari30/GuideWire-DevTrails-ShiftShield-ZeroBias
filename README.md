@@ -4,6 +4,11 @@
 
 > We don't just detect rain. We detect whether the rain actually cost you money and we prove it using data the platforms already collect.
 
+## Pitch Deck
+
+[View ShiftShield Pitch Deck](https://drive.google.com/file/d/1IR0CAlN9mPBU786qDfKsMqLSKw55P9WC/view?usp=drivesdk)
+
+
 ---
 
 ## The Problem
