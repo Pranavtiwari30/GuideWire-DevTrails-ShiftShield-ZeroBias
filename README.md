@@ -136,6 +136,44 @@ Claim Input
 
 Each model outputs a binary signal (triggered / not triggered). `scoring.py` aggregates them into a `confidence_score`. If ≥ 3 signals fire AND confidence > threshold, the claim is approved automatically.
 
+
+## Social Disruption Verification Agent (In Development)
+
+Pillar 4 needs a reliable answer to one question: *did a bandh, curfew, or Section 144 order actually shut down this area on this date?* News coverage of these events is noisy. Bandhs get called off, rumors spread, and a single outlet can misreport. So instead of trusting one source or one model's judgment, ShiftShield uses a tool-calling LLM agent to gather evidence and deterministic code to decide.
+
+```
+Query (city, date)
+    │
+    ▼
+Agent Loop (tool-calling LLM via Groq)
+    ├─▶ search_news      Multiple query variants (English, local terms, localities)
+    ├─▶ fetch_article    Clean article text extraction
+    ├─▶ extract_claim    Structured claim: event type, date, localities,
+    │                    status (announced / in effect / called off / rumored),
+    │                    verbatim evidence quote
+    └─▶ finish
+    │
+    ▼
+Corroboration Layer (deterministic, no LLM)
+    ├─ ≥ 2 independent publishers report the same event
+    ├─ Event dates fall within the query window
+    ├─ No source reports the event as called off
+    └─ Every evidence quote verified against the fetched article text
+    │
+    ▼
+Pincode Mapping → CONFIRMED / UNCONFIRMED / NO_EVENT
+```
+
+**Design principles**
+
+- **The LLM gathers evidence; code decides.** The final verdict always comes from the corroboration layer, never from the model's own judgment, so every confirmed event is traceable to specific sources and quotes.
+- **Bounded execution.** Hard limits on steps, searches, and fetches; tool errors are returned to the agent as data instead of crashing the loop.
+- **Full traceability.** Every step (tool call, arguments, result, latency) is logged as a JSONL trace.
+
+**Evaluation.** The agent is evaluated against a labeled set of real disruption events, dates with no event, and tricky cases (called-off bandhs, rumors, single-outlet reports, events in neighboring cities). We measure precision and recall on confirmed events, locality accuracy, and evidence-quote verification rate, and classify each failure (search miss, extraction error, false corroboration, missed call-off, location mismatch).
+
+**Status:** in active development on the `feature/disruption-agent` branch. Built as an isolated module, so the existing claim pipeline and API are unaffected.
+
 ## API Reference
 
 | Method | Endpoint                    | Description                        |
